@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, getContext } from "svelte";
+  import Loading from "./loading.svelte";
   const context: SvelteStore<any> = getContext("context");
   const amp: boolean = getContext("amp");
 
@@ -110,6 +111,9 @@
     {/if}
   {/if}
 </div>
+{#if !amp}
+  <Loading />
+{/if}
 
 {#if showMenu}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -170,6 +174,7 @@
     background-color: #fff;
     background-color: #4d91f7;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid #fff;
     display: flex;
     justify-content: center;
     align-items: center;
