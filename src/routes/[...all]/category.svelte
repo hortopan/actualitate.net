@@ -1,6 +1,7 @@
 <script lang="ts">
   import ListItem from "$lib/components/listItem.svelte";
   export let data: any;
+  // { page: 1, limit: 2, pages: 119, total: 238, next: 2, prev: null }
 </script>
 
 <div class="container">
@@ -13,6 +14,23 @@
       <ListItem data={item} />
     {/each}
   </div>
+
+  {#if data.pagination?.prev || data.pagination?.next}
+    <div class="pagination">
+      {#if data.pagination?.prev}
+        <a href="{data.meta.canonical}/page:{data.pagination.prev}"
+          >Pagina precedentă</a
+        >
+      {/if}
+
+      {#if data.pagination?.next}
+        <a
+          href="{data.meta.canonical}/page:{data.pagination.next}"
+          title="Pagina următoare">Pagina următoare</a
+        >
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -25,6 +43,29 @@
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+    a {
+      margin: 10px;
+      display: block;
+      padding: 8px 16px;
+      border: 1px solid #eaeaea;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #000;
+      font-size: 16px;
+      font-weight: 700;
+      transition: all 0.2s ease-in-out;
+      &:hover {
+        background: #eaeaea;
+      }
+    }
   }
 
   .container {

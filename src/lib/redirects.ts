@@ -1,9 +1,8 @@
-import { Database } from 'sqlite3';
-import { open } from 'sqlite';
-import { existsSync } from 'fs';
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
 import Config from '$lib/config';
 
-let db: Database | void;
+let db: any;
 
 let first_time = true;
 
@@ -23,9 +22,10 @@ export default async function getRedirect(path: string): Promise<string | void> 
 
         db = await open({
             filename: Config.redirects_db_path,
-            driver: Database
+            driver: sqlite3.Database,
         });
-    }
+
+    };
 
     const redirect = await db.get('SELECT * FROM redirects WHERE source_path = ?', path);
     return redirect?.destination_path;

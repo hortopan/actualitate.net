@@ -34,6 +34,14 @@ export type RETURN_DATA = {
         canonical: string;
         image?: Nullable<string>;
     };
+    pagination?: {
+        page: number;
+        pages: number;
+        limit: number;
+        total: number;
+        next: number;
+        preV: number;
+    },
     config?: JSON_CONFIG;
     site_config?: {
         friendly_name: string;

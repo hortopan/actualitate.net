@@ -65,18 +65,7 @@ function processNewsItem(post: PostOrPageInternal): PostOrPageInternal {
     return post;
 }
 
-export async function getData(path: string): Promise<RETURN_DATA> {
-
-    const is_redirect = await isRedirect(path);
-
-    if (is_redirect) {
-        throw redirect(301, `${Config.friendly_url}${is_redirect}`);
-    }
-
-    // ignore anything that might be an image or js , css
-    if (path.match(/\.(jpg|jpeg|png|gif|js|css|svg|ico|webp|woff|woff2|ttf|otf|eot|map)$/)) {
-        throw error(404, 'Not found');
-    }
+async function getConfig(): Promise<JSON_CONFIG> {
 
     let jsonConfig: JSON_CONFIG = undefined;
 
@@ -93,9 +82,26 @@ export async function getData(path: string): Promise<RETURN_DATA> {
             }
         }
 
+        return jsonConfig;
+
     } catch (e) {
         console.error(`/config page does not exist`, e);
     }
+}
+
+export async function getData(path: string): Promise<RETURN_DATA> {
+
+    const is_redirect = await isRedirect(path);
+
+    if (is_redirect) {
+        throw redirect(301, `${Config.friendly_url}${is_redirect}`);
+    }
+
+    // ignore anything that might be an image or js , css
+    if (path.match(/\.(jpg|jpeg|png|gif|js|css|svg|ico|webp|woff|woff2|ttf|otf|eot|map|txt)$/)) {
+        throw error(404, 'Not found');
+    }
+
 
     if (path.startsWith('/a/')) {
         let data = await api.posts.read({ slug: path.slice(3) }, { include: 'tags' });
@@ -123,7 +129,7 @@ export async function getData(path: string): Promise<RETURN_DATA> {
             lastModified,
             path,
             meta,
-            config: jsonConfig
+            config: await getConfig()
         };
     }
 
@@ -152,16 +158,37 @@ export async function getData(path: string): Promise<RETURN_DATA> {
             lastModified,
             path,
             meta,
-            config: jsonConfig
+            config: await getConfig()
         }
     }
 
     if (path.startsWith('/c/')) {
 
-        let data: any = await api.posts.browse({ limit: 30, order: 'published_at DESC', filter: [`tag:${path.slice(3)}`], include: 'tags' });
+        let page = 1;
+
+        // is this pagination if it ends with /page:number
+        const end = path.split('/').pop();
+        if (end && end.match(/^page:[0-9]+$/)) {
+
+            const pn = parseInt(end.split(':')[1], 10);
+            if (isNaN(pn)) {
+                throw error(404, 'Not found');
+            }
+
+            path = path.replace(/\/page:[0-9]+$/, '');
+
+            console.log('page', pn);
+
+            page = pn;
+        }
+
+
+        let data: any = await api.posts.browse({ limit: 30, page, order: 'published_at DESC', filter: [`tag:${path.slice(3)}`], include: 'tags' });
         if (data.length === 0) {
             throw error(404, 'Category not found');
         }
+
+        const pagination = data.meta?.pagination
 
         data = data.map((post: any) => processNewsItem(post));
 
@@ -184,10 +211,16 @@ export async function getData(path: string): Promise<RETURN_DATA> {
             lastModified,
             path,
             meta,
-            config: jsonConfig
+            pagination,
+            config: await getConfig()
         }
 
 
+    }
+
+    // check if contains invalid characters for a slug
+    if (path.match(/[^a-z0-9\-\/]/)) {
+        throw error(404, 'Not found, invalid slug');
     }
 
     let data = await api.pages.read({ slug: path.slice(1) }, { include: 'tags' });
@@ -213,6 +246,6 @@ export async function getData(path: string): Promise<RETURN_DATA> {
         lastModified,
         path,
         meta,
-        config: jsonConfig
+        config: await getConfig()
     }
 }

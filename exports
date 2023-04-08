@@ -1,0 +1,10 @@
+export SECRET=horto
+export URL=http://localhost:5173
+export PORT=5173
+export DOMAIN=actualitate.net
+export FRIENDLY_NAME=Actualitate.net
+export FRIENDLY_DESCRIPTION=Actualitate.net
+export LANG=ro
+export GHOST_URL=http://localhost:3001
+export GHOST_KEY=b8fa409a36fc2ac0ff1375f9f2
+export REDIRECTS_DB_PATH=redirects.sqlite
