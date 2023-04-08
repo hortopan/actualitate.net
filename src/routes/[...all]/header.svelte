@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, getContext } from "svelte";
   const context: SvelteStore<any> = getContext("context");
-  const amp = getContext("amp");
+  const amp: boolean = getContext("amp");
 
   let dom: HTMLElement;
 
@@ -60,7 +60,7 @@
 
     {#if amp}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <div class="menuButton" on="tap:sidebar1">
+      <button class="menuButton" on="tap:sidebar1" tabindex="1">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -79,7 +79,7 @@
             y2="6"
           /><line x1="3" y1="18" x2="21" y2="18" /></svg
         >
-      </div>
+      </button>
     {:else}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <div
@@ -155,7 +155,9 @@
   </amp-sidebar>
 {/if}
 
-<window on:resize={checkOverflowing} />
+{#if !amp}
+  <window on:resize={checkOverflowing} />
+{/if}
 
 <style lang="scss">
   .header {
@@ -192,6 +194,8 @@
     }
 
     .menuButton {
+      background-color: transparent;
+      border: none;
       z-index: 1001;
       position: fixed;
       right: 0px;
