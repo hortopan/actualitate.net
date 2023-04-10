@@ -150,7 +150,19 @@ export function getBlocks(html: string | null, blocks: BLOCKS): Entry[] {
 
                 break;
 
+            case 'iframe':
+
+                elements.push({
+                    component: blocks.Embed,
+                    props: {
+                        html: `<figure>${element.outerHTML}</figure>`,
+                    },
+                });
+
+                break;
+
             default:
+
                 if (element.classList?.contains("kg-button-card")) {
                     elements.push({
                         component: blocks.Button,

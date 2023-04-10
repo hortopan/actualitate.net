@@ -25,6 +25,9 @@
     position: relative;
     margin: 10px auto;
     max-width: var(--max-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     :global {
       figure {

@@ -338,19 +338,6 @@
       --max-width: calc(100% - 30px);
       padding: 5px;
     }
-
-    .list {
-      .item {
-        width: calc(100% - 20px);
-        .title {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-      }
-    }
-
     header {
       h1 {
         max-width: 100%;
