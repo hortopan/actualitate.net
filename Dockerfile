@@ -41,6 +41,7 @@ ENV LANG=en
 ENV GHOST_URL=http://internal
 ENV GHOST_KEY=11111111111111111111111111
 ENV GHOST_PUBLIC_URL=https://ghost.example.com
+ENV REDIS=redis://redis:6379
 
 RUN ["npm", "run", "build"]
 
