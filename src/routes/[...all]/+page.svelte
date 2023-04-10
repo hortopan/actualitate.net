@@ -102,7 +102,7 @@
   <meta name="theme-color" content="#ffffff" />
 
   <!-- Chrome for Android -->
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="icon" sizes="192x192" href="favicon-192.png" />
 
   <script defer>
