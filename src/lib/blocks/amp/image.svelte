@@ -15,20 +15,22 @@
 </script>
 
 {#if src}
-  <amp-img layout="responsive" {width} {height} {src} {alt} />
-
-  {#if caption}
-    <div class="caption">{caption}</div>
-  {/if}
+  <figure>
+    <amp-img layout="responsive" {width} {height} {src} {alt} />
+    {#if caption}
+      <figcaption>{caption}</figcaption>
+    {/if}
+  </figure>
 {/if}
 
 <style lang="scss">
-  .caption {
-    font-size: 16px;
-    font-style: italic;
-    color: #666;
-    padding: 5px 15px 5px 15px;
-    text-align: center;
-    margin: -15px -15px 15px -15px;
+  figure {
+    figcaption {
+      padding: 10px;
+      font-size: 0.8em;
+      color: #666;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
   }
 </style>

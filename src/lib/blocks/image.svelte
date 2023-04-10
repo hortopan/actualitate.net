@@ -28,6 +28,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 
     img {
       max-width: 100%;
@@ -38,7 +39,6 @@
     }
 
     figcaption {
-      margin-top: -5px;
       padding: 10px;
       font-size: 0.8em;
       color: #666;
