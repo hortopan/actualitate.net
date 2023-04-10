@@ -38,8 +38,9 @@ ENV DOMAIN=example.com
 ENV FRIENDLY_NAME=Example
 ENV FRIENDLY_DESCRIPTION=Example
 ENV LANG=en
-ENV GHOST_URL=https://ghost.example.com
+ENV GHOST_URL=http://internal
 ENV GHOST_KEY=11111111111111111111111111
+ENV GHOST_PUBLIC_URL=https://ghost.example.com
 
 RUN ["npm", "run", "build"]
 

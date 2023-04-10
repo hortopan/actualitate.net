@@ -8,6 +8,7 @@ class CONFIG {
 	public readonly friendly_name: string;
 	public readonly friendly_description: string;
 	public readonly lang: string;
+	public readonly ghost_public_url: string;
 	public readonly ghost_url: string;
 	public readonly ghost_key: string;
 	public readonly redirects_db_path?: string;
@@ -79,6 +80,12 @@ class CONFIG {
 		if (env.CACHE_DISABLED && env.CACHE_DISABLED === 'true') {
 			this.cache_disabled = true;
 		}
+
+		if (!env.GHOST_PUBLIC_URL) {
+			throw new Error('ENV GHOST_PUBLIC_URL missing');
+		}
+
+		this.ghost_public_url = env.GHOST_PUBLIC_URL;
 
 	}
 }
