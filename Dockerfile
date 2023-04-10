@@ -29,6 +29,7 @@ COPY vite.config.ts /app/vite.config.ts
 COPY server.js /app/server.js
 COPY logging.js /app/logging.js
 
+ENV BUILDING=true
 ENV NODE_ENV=production
 ENV PORT=80
 ENV LISTEN=0.0.0.0:80

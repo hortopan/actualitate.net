@@ -2,6 +2,7 @@ import type { Handle } from '@sveltejs/kit';
 import Config from '$lib/config';
 
 export const handle: Handle = async ({ event, resolve }) => {
+
     event.locals.responseHeaders = new Map();
 
     let buffer = '';

@@ -1,5 +1,10 @@
 import { default as redis } from 'redis';
+import { env } from '$env/dynamic/private';
 import Config from '$lib/config';
 const client = redis.createClient({ url: Config.redis });
-client.connect();
+
+if (!env.BUILDING) {
+    client.connect();
+}
+
 export default client;
