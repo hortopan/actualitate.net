@@ -17,6 +17,7 @@ type BLOCKS = {
     Hr: typeof SvelteComponent;
     Button: typeof SvelteComponent;
     Header: typeof SvelteComponent;
+    Blockquote: typeof SvelteComponent;
 }
 
 export function getBlocks(html: string | null, blocks: BLOCKS): Entry[] {
@@ -36,6 +37,15 @@ export function getBlocks(html: string | null, blocks: BLOCKS): Entry[] {
             case "p":
                 elements.push({
                     component: blocks.Paragraph,
+                    props: {
+                        html: element.outerHTML,
+                    },
+                });
+                break;
+
+            case "blockquote":
+                elements.push({
+                    component: blocks.Blockquote,
                     props: {
                         html: element.outerHTML,
                     },

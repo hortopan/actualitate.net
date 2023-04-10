@@ -11,6 +11,8 @@ class CONFIG {
 	public readonly ghost_url: string;
 	public readonly ghost_key: string;
 	public readonly redirects_db_path?: string;
+	public readonly redis: string;
+	public readonly cache_disabled: boolean = false;
 
 	public constructor() {
 
@@ -66,6 +68,16 @@ class CONFIG {
 
 		if (env.REDIRECTS_DB_PATH) {
 			this.redirects_db_path = env.REDIRECTS_DB_PATH;
+		}
+
+		if (!env.REDIS) {
+			throw new Error('ENV REDIS missing');
+		}
+
+		this.redis = env.REDIS;
+
+		if (env.CACHE_DISABLED && env.CACHE_DISABLED === 'true') {
+			this.cache_disabled = true;
 		}
 
 	}

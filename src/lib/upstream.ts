@@ -6,14 +6,36 @@ import Config from '$lib/config';
 import { error } from '@sveltejs/kit';
 import isRedirect from '$lib/redirects';
 import { redirect } from '@sveltejs/kit';
+import redis from '$lib/redis';
+import axios from 'axios';
 
 // const GHOST_URL = 'http://127.0.0.1:3001';
 // const GHOST_KEY = 'b8fa409a36fc2ac0ff1375f9f2';
 
+
 const api = GhostContentAPI({
     url: Config.ghost_url,
     key: Config.ghost_key,
-    version: 'v5.0'
+    version: 'v5.0',
+    // we are fixing issue with internally avoiding redirects when not using https
+    // @ts-ignore
+    makeRequest: ({ url, method, params, headers }) => {
+        headers['X-Forwarded-Proto'] = 'https';
+        // @ts-ignore
+        return axios[method](url, {
+            params,
+
+            // @ts-ignore
+            paramsSerializer: (parameters) => {
+                return Object.keys(parameters).reduce((parts, k) => {
+                    const val = encodeURIComponent([].concat(parameters[k]).join(','));
+                    // @ts-ignore
+                    return parts.concat(`${k}=${val}`);
+                }, []).join('&');
+            },
+            headers
+        });
+    }
 });
 
 function processNewsItem(post: PostOrPageInternal): PostOrPageInternal {
@@ -29,8 +51,9 @@ function processNewsItem(post: PostOrPageInternal): PostOrPageInternal {
     }
 
     if (post.feature_image) {
-        post.feature_image = getImageURL(post.feature_image, 1200, 1200);
-        post.thumb_image = getImageURL(post.feature_image, 600, 600, 'contain');
+        const featured_image = post.feature_image;
+        post.feature_image = getImageURL(featured_image, 1200, 1200);
+        post.thumb_image = getImageURL(featured_image, 600, 600, 'contain');
     }
 
     if (!post.meta_description) {
@@ -67,6 +90,13 @@ function processNewsItem(post: PostOrPageInternal): PostOrPageInternal {
 
 async function getConfig(): Promise<JSON_CONFIG> {
 
+    if (!Config.cache_disabled) {
+        const cache = await redis.get('config');
+        if (cache) {
+            return JSON_CONFIG.parse(JSON.parse(cache));
+        }
+    }
+
     let jsonConfig: JSON_CONFIG = undefined;
 
     try {
@@ -82,6 +112,10 @@ async function getConfig(): Promise<JSON_CONFIG> {
             }
         }
 
+        if (jsonConfig) {
+            await redis.set('config', JSON.stringify(jsonConfig));
+        }
+
         return jsonConfig;
 
     } catch (e) {
@@ -90,6 +124,26 @@ async function getConfig(): Promise<JSON_CONFIG> {
 }
 
 export async function getData(path: string): Promise<RETURN_DATA> {
+
+    if (!Config.cache_disabled) {
+        const page_cache = await redis.hGet('page', path);
+        if (page_cache) {
+            const data = JSON.parse(page_cache);
+
+            if (data.lastModified) {
+                data.lastModified = new Date(data.lastModified);
+            }
+
+            return data;
+        }
+    }
+
+    const data = await _getData(path);
+    await redis.hSet('page', path, JSON.stringify(data));
+    return data;
+}
+
+async function _getData(path: string): Promise<RETURN_DATA> {
 
     const is_redirect = await isRedirect(path);
 
@@ -220,7 +274,11 @@ export async function getData(path: string): Promise<RETURN_DATA> {
 
     // check if contains invalid characters for a slug
     if (path.match(/[^a-z0-9\-\/]/)) {
-        throw error(404, 'Not found, invalid slug');
+
+        // check if image , video, or js, css
+        if (path.match(/\.(jpg|jpeg|png|gif|js|css|svg|ico|webp|woff|woff2|ttf|otf|eot|map|txt)$/)) {
+            throw error(404, 'Not found, invalid slug');
+        }
     }
 
     let data = await api.pages.read({ slug: path.slice(1) }, { include: 'tags' });

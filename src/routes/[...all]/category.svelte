@@ -1,7 +1,6 @@
 <script lang="ts">
   import ListItem from "$lib/components/listItem.svelte";
   export let data: any;
-  // { page: 1, limit: 2, pages: 119, total: 238, next: 2, prev: null }
 </script>
 
 <div class="container">
