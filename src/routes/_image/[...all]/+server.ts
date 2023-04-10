@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import axios from 'axios';
+import axios, { Axios } from 'axios';
 import sharp from 'sharp';
 import { createHash } from 'crypto';
 import { error } from '@sveltejs/kit';
@@ -23,15 +23,26 @@ export const GET = (async (url) => {
         throw error(409, 'Invalid hash');
     }
 
-    const req = await axios.request({
-        url: remoteImage,
-        maxRedirects: 1,
-        maxBodyLength: 1024 * 1024 * 10,
-        maxContentLength: 1024 * 1024 * 10,
-        timeout: 10000,
-        method: 'GET',
-        responseType: 'arraybuffer',
-    });
+    let req: any;
+
+    try {
+        req = await axios.request({
+            url: remoteImage,
+            maxRedirects: 1,
+            maxBodyLength: 1024 * 1024 * 10,
+            maxContentLength: 1024 * 1024 * 10,
+            timeout: 10000,
+            method: 'GET',
+            responseType: 'arraybuffer',
+            validateStatus: (_status) => true,
+        });
+    } catch (e: any) {
+        throw error(409, e.toString());
+    }
+
+    if (req.status !== 200) {
+        throw error(409, req.statusText);
+    }
 
     if (!req.headers['content-type'].startsWith('image/')) {
         throw error(409);

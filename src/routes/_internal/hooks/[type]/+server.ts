@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '../$types';
 import redis from '$lib/redis';
 
@@ -7,7 +7,13 @@ export const POST = (async ({ request, params }) => {
     // @ts-ignore
     const type = params.type;
 
-    const body = await request.json();
+    let body: any;
+
+    try {
+        body = await request.json();
+    } catch (e) {
+        throw error(400, "Invalid JSON on hooks");
+    }
 
     switch (type) {
         case 'page_updated':
@@ -38,4 +44,5 @@ async function page_updated(body: any) {
 async function post_updated(body: any) {
     console.log("post updated", body.post.current.slug);
     await redis.del('page');
+    return json("ok");
 }

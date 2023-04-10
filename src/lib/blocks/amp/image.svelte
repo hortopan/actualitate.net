@@ -4,10 +4,18 @@
   export let caption: string | void;
   export let width: number | undefined;
   export let height: number | undefined;
+
+  if (!width) {
+    width = 600;
+  }
+
+  if (!height) {
+    height = 400;
+  }
 </script>
 
 {#if src}
-  <amp-img layout="responsive" {width} {height} {src} />
+  <amp-img layout="responsive" {width} {height} {src} {alt} />
 
   {#if caption}
     <div class="caption">{caption}</div>
