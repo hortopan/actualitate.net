@@ -53,7 +53,7 @@ function processNewsItem(post: PostOrPageInternal): PostOrPageInternal {
     if (post.feature_image) {
         const featured_image = post.feature_image;
         post.feature_image = getImageURL(featured_image, 1200, 1200);
-        post.thumb_image = getImageURL(featured_image, 600, 600, 'contain');
+        post.thumb_image = getImageURL(featured_image, 600, 600, 'cover');
     }
 
     if (!post.meta_description) {
