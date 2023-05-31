@@ -18,6 +18,7 @@ type BLOCKS = {
     Button: typeof SvelteComponent;
     Header: typeof SvelteComponent;
     Blockquote: typeof SvelteComponent;
+    List: typeof SvelteComponent;
 }
 
 export function getBlocks(html: string | null, blocks: BLOCKS): Entry[] {
@@ -159,6 +160,16 @@ export function getBlocks(html: string | null, blocks: BLOCKS): Entry[] {
                     },
                 });
 
+                break;
+
+            case "ul":
+            case "ol":
+                elements.push({
+                    component: blocks.List,
+                    props: {
+                        html: element.outerHTML,
+                    },
+                });
                 break;
 
             default:

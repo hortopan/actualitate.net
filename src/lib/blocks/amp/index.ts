@@ -9,6 +9,7 @@ import Bookmark from "./bookmark.svelte";
 import Header from "./header.svelte";
 import Video from "./video.svelte";
 import Blockquote from "./blockquote.svelte";
+import List from "./list.svelte";
 
 export default {
     Paragraph,
@@ -22,4 +23,5 @@ export default {
     Header,
     Video,
     Blockquote,
+    List,
 }
